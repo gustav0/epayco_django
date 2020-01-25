@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Epayco payment result</title>
+    <style>
+        table tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+        table tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        table th {
+            color: white;
+            background-color: grey;
+        }</style>
+</head>
+<body>
+<h1>Transaction result</h1>
+<table>
+    <thead>
+    <th>Name</th>
+    <th>Value</th>
+    </thead>
+    <tbody>
+    {% for key, value in payment.obj.get_invoice_data.items %}
+    <tr>
+        <td>{{ key }}</td>
+        <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<a href="/">Return home</a>
+</body>
+</html>

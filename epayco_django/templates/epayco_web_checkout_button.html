@@ -1,0 +1,28 @@
+<form>
+    <script src='https://checkout.epayco.co/checkout.js'
+            data-epayco-key='{{ public_key }}'
+            class='epayco-button'
+            data-epayco-amount='{{ amount }}'
+            data-epayco-tax='{{ tax }}'
+            data-epayco-tax-base='{{ tax_base }}'
+            data-epayco-name='{{ name }}'
+            data-epayco-description='{{ description }}'
+            data-epayco-currency='{{ currency }}'
+            data-epayco-country='{{ country_code }}'
+            data-epayco-test='{{ test }}'
+            data-epayco-external='{{ external }}'
+            data-epayco-extra1="{{ extra1 }}"
+            data-epayco-extra2="{{ extra2 }}"
+            data-epayco-extra3="{{ extra3 }}"
+            data-epayco-extra4="{{ extra4 }}"
+            data-epayco-extra5="{{ extra5 }}"
+            data-epayco-extra6="{{ extra6 }}"
+            data-epayco-extra7="{{ extra7 }}"
+            data-epayco-extra8="{{ extra8 }}"
+            data-epayco-extra9="{{ extra9 }}"
+            data-epayco-extra10="{{ extra10 }}"
+            data-epayco-response="{% if same_site %}{% if request.is_secure %}https://{% else %}http://{% endif %}{{ domain }}{% endif %}{{ response_url }}"
+            data-epayco-confirmation="{% if same_site %}{% if request.is_secure %}https://{% else %}http://{% endif %}{{ domain }}{% endif %}{{ confirmation_url }}"
+            data-epayco-button='{{ button_url }}'>
+    </script>
+</form>
