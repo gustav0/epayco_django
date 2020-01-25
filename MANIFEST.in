@@ -1,0 +1,5 @@
+include README.md LICENSE
+recursive-include epayco_django/migrations/ *
+recursive-include epayco_django/templatetags/ *
+recursive-include epayco_django/templates/ *
+recursive-include docs/ *

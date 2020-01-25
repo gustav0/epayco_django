@@ -1,0 +1,3 @@
+Djnago>=1.11
+git+https://github.com/epayco/epayco-python.git
+# Use epayco python repo instead of pip while they fix their pip installation.
