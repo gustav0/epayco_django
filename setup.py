@@ -8,10 +8,10 @@ def read(fname):
 
 
 setup(name='epayco-django',
-      version='0.0.1',
+      version='0.0.4',
       include_package_data=True,
       license='MIT',
-      description='A django integration for ePayco\'s gateway.',
+      description="A django integration for ePayco's gateway.",
       long_description=read('README.md'),
       long_description_content_type='text/markdown',
       url='https://github.com/gustav0/epayco_django',
@@ -19,9 +19,8 @@ setup(name='epayco-django',
       author_email='tavito.286@gmail.com',
       packages=['epayco_django'],
       install_requires=[
-          'Django>=1.11',
-          'pyepayco',
           'requests',
+          'epaycosdk>=2.0.0',
       ],
       classifiers=[
           'Environment :: Web Environment',

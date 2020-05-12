@@ -2,10 +2,21 @@
     This module follows the approach Django Rest Framework settings.
     The 'settings.py' file might look like this:
     EPAYCO = {
-        'PUBLIC_KEY': '',
-        'SECRET_KEY':  '',
-        'P_KEY': '',
-        'TEST': False # Defaults to true
+        'PUBLIC_KEY': 'MY_PUBLIC_KEY',
+        'PRIVATE_KEY': 'MY_PRIVATE_KEY',
+        'P_KEY': 'MY_P_KEY',
+        'TEST': True, # you probably want to test it first rigth?
+
+        # Optional (ignore these if you want the default behaviour)
+        'FORCE_HTTPS': False, # If you use https on your website you may want to enable this.
+        'RESPONSE_URL': reverse('epayco_response'),
+        'CONFIRMATION_URL': reverse('epayco_confirmation'),
+
+        # Instead of reversing a project url you could just use any url instead:
+        'CONFIRMATION_URL': 'https://yourdomain.com/epayco/confirmation',
+
+        # And you can use your own image as a payment button
+        'CHECKOUT_BUTTON_URL': 'https://mydomain.com/btns/pay_now_button.png'
     }
 """
 from django.conf import settings
@@ -27,7 +38,7 @@ DEFAULTS = {
     'RESPONSE_URL': 'epayco_response_validation',
     'CHECKOUT_BUTTON_URL': 'https://369969691f476073508a-60bf0867add971908d4f26a64'
                            '519c2aa.ssl.cf5.rackcdn.com/btns/boton_carro_de_compras_epayco5.png',
-    'IS_SECURE': True,  # Activates HTTPS on requests
+    'FORCE_HTTPS': True,  # Activates HTTPS on requests
 }
 
 # List of settings that cannot be empty

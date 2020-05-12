@@ -6,15 +6,36 @@ A Django integration for ePayco's gateway.
 * [Django](https://github.com/django/django)
 * [epayco-python](https://github.com/epayco/epayco-python)
 
+###Warning
+This library intends to use a fork of the epayco-python as the current version published py its owner
+doesn't work on pip, and you would have to fix it manually.
+The only changes are a couple of lines on the MANIFEST.in to make the setup.py properly 
+include all relevant directories within the repo.
+
+You can check the fork [here](https://github.com/gustav0/epayco-python).
+
+
+Run this after you install the library.
+```
+pip install git+https://github.com/gustav0/epayco-python.git --no-cache-dir -U
+```
+Or append it to your requirements.txt at the end of the file.
+```
+git+https://github.com/gustav0/epayco-python.git
+```
+
+This will be a temporary workaround until they fix the problem. 
+
+
 ## Installation
 If you want clone the repository:
 ```
-$ git clone https://github.com/gustav0/epayco_django.git
+git clone https://github.com/gustav0/epayco_django.git
 ```
 
 Install from package manager
 ```
-$ pip install epayco-django
+pip install epayco-django
 ```
 
 
@@ -37,9 +58,12 @@ EPAYCO = {
     'TEST': True, # you probably want to test it first rigth?
     
     # Optional (ignore these if you want the default behaviour)
-    'IS_SECURE': False, # Enable this if you are in production
-    'CONFIRMATION_URL': reverse('epayco_confirmation'),
+    'FORCE_HTTPS': False, # If you use https on your website you may want to enable this.
     'RESPONSE_URL': reverse('epayco_response'),
+    'CONFIRMATION_URL': reverse('epayco_confirmation'),
+    
+    # Instead of reversing a project url you could just use any url instead:
+    'CONFIRMATION_URL': 'https://yourdomain.com/epayco/confirmation', 
     
     # And you can use your own image as a payment button
     'CHECKOUT_BUTTON_URL': 'https://mydomain.com/btns/pay_now_button.png'
@@ -49,21 +73,27 @@ Now edit the `myproject/urls.py` module in your project:
 
 ```
 from django.conf.urls import url, include
+# Or Django 2.0 +
+from django.urls import path, include
+
 from epayco_django import urls as epayco_urls
 
-# or this if you are using Django 2.0 +
-from django.urls import path, include
 
 urlpatterns = [
     ...
     url('^', include(epayco_urls)),
     
-    # or 
+    # or Django 2.0 +
     
     path('', include(epayco_urls)),
     ...
 ]
 ```
+Finally run the migrations:
+```
+python manage.py migrate epayco_django
+```
+
 ## Usage
 At the moment the usage of the library is very limited, but it can be helpful 
 to receive and act upon payment confirmations.
@@ -88,7 +118,7 @@ from django.dispatch import receiver
 from epayco_django.signals import valid_confirmation_received
 
 @receiver(valid_confirmation_received)
-def activate_membership(sender, user=None, **kwargs):
+def activate_membership(sender, confirmation=None, **kwargs):
     ...
     HERE SHOULD BE YOUR MEMBERSHIP ACTIVATION CODE
     ...

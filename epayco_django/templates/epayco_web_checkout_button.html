@@ -21,8 +21,8 @@
             data-epayco-extra8="{{ extra8 }}"
             data-epayco-extra9="{{ extra9 }}"
             data-epayco-extra10="{{ extra10 }}"
-            data-epayco-response="{% if same_site %}{% if request.is_secure %}https://{% else %}http://{% endif %}{{ domain }}{% endif %}{{ response_url }}"
-            data-epayco-confirmation="{% if same_site %}{% if request.is_secure %}https://{% else %}http://{% endif %}{{ domain }}{% endif %}{{ confirmation_url }}"
+            data-epayco-response="{{ response_url }}"
+            data-epayco-confirmation="{{ confirmation_url }}"
             data-epayco-button='{{ button_url }}'>
     </script>
 </form>

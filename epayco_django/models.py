@@ -38,7 +38,9 @@ class AbstractFlagSegment(models.Model):
                 self.flag_info = 'Invalid sign. ({}...)'.format(self.signature[:18])
                 super().save(*args, **kwargs)
                 return
-        exists = PaymentConfirmation.objects.filter(transaction_id=self.transaction_id).exists()
+        exists = PaymentConfirmation.objects.filter(transaction_id=self.transaction_id)\
+            .exclude(cod_transaction_state=3)\
+            .exists()
         if not self.id and exists:  # Duplicate transaction validation
             self.flag = True
             self.flag_code = self.DUPLICATE_TRANSACTION

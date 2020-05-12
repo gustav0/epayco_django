@@ -1,6 +1,6 @@
 import hashlib
 
-import pyepayco.epayco as Epayco
+import epaycosdk.epayco as Epayco
 import requests
 
 from .settings import epayco_settings
@@ -21,15 +21,6 @@ def validate_response_code(ref_payco, request=None):
                'privateKey': epayco_settings.PRIVATE_KEY,
                'test': epayco_settings.TEST,
                'lenguage': 'ES'}
-    check_response_ref_url = 'https://api.secure.payco.co/validation/v1/reference/{}'.format(ref_payco)
-    response = requests.get(check_response_ref_url)
-    r = response.json()
-    if 'success' in r.keys() and r['success'] == True:
-        try:
-            ref_payco = r['data']['x_ref_payco']
-        except:
-            raise
-            pass
     qs = PaymentConfirmation.objects.filter(ref_payco__iexact=ref_payco)
     if not qs.exists():
         epayco = Epayco.Epayco(options)
@@ -38,12 +29,12 @@ def validate_response_code(ref_payco, request=None):
             if epayco_settings.CONFIRMATION_URL.startswith('http'):
                 url = epayco_settings.CONFIRMATION_URL
             else:
-                url = '{}://{}{}'.format('https' if epayco_settings.IS_SECURE else 'http',
+                url = '{}://{}{}'.format('https' if epayco_settings.FORCE_HTTPS or request.is_secure() else 'http',
                                          request.get_host(), epayco_settings.CONFIRMATION_URL)
             r2 = requests.post(url, data=response['data'])
             if r2.status_code == 405:
                 raise Exception('There seems the be an error reaching the confirmation URL.'
-                               ' Please make sure you are making good use of the "IS_SECURE" setting.')
+                                ' Please make sure you are making good use of the "FORCE_HTTPS" setting.')
             obj = PaymentConfirmation.objects.filter(ref_payco__iexact=ref_payco).last()
             if obj:
                 return {'valid_ref': True, 'existed': False, 'flag': obj.is_flagged, 'obj': obj}

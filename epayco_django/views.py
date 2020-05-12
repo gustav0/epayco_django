@@ -1,6 +1,7 @@
 import json
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView
@@ -46,17 +47,8 @@ class ResponseValidationView(TemplateView):
         return context
 
     def post(self, request, **kwargs):
-        ref = request.POST.get('ref', None)
-
-        if ref is None:
-            ref = request.POST.get('x_ref_payco', None)
+        ref = request.POST.get('x_ref_payco', None)
         if ref is None:
             return JsonResponse({'ref': ['This field is required.']}, status=400)
-
-        validation = validate_response_code(ref, request)
-        try:
-            validation['ref_payco'] = validation['obj'].ref_payco
-            del validation['obj']
-        except:
-            pass
-        return super().get(request, **kwargs)
+        validate_response_code(ref, request)
+        return HttpResponseRedirect(reverse('epayco_response_validation') + '?ref_payco={}'.format(ref))

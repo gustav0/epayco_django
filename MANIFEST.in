@@ -1,4 +1,4 @@
-include README.md LICENSE
+include README.md LICENSE setup.py requirements.txt
 recursive-include epayco_django/migrations/ *
 recursive-include epayco_django/templatetags/ *
 recursive-include epayco_django/templates/ *
