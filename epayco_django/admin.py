@@ -4,7 +4,7 @@ from .models import PaymentConfirmation
 
 
 class PaymentConfirmationAdmin(admin.ModelAdmin):
-    list_display = ('ref_payco', 'transaction_state', 'test_request', 'flag', 'flag_info')
+    list_display = ('ref_payco', 'transaction_state', 'test_request', 'flag', 'flag_info', 'created')
     list_filter = ('flag', 'test_request', 'transaction_state')
     search_fields = ['transaction_id', 'ref_payco']
 

@@ -21,7 +21,7 @@ def validate_response_code(ref_payco, request=None):
                'privateKey': epayco_settings.PRIVATE_KEY,
                'test': epayco_settings.TEST,
                'lenguage': 'ES'}
-    qs = PaymentConfirmation.objects.filter(ref_payco__iexact=ref_payco)
+    qs = PaymentConfirmation.objects.filter(ref_payco__iexact=ref_payco).exclude(cod_transaction_state=3)
     if not qs.exists():
         epayco = Epayco.Epayco(options)
         response = epayco.cash.get(ref_payco)  # Validate the reference
@@ -42,8 +42,8 @@ def validate_response_code(ref_payco, request=None):
                 return {''}
         return {'valid_ref': False}
     elif qs.filter(flag=False).exists():
-        obj = qs.filter(flag=False).first()
+        obj = qs.filter(flag=False).last()
         return {'valid_ref': True, 'existed': True, 'flag': False, 'obj': obj}
     else:
-        obj = qs.first()
+        obj = qs.last()
         return {'valid_ref': True, 'existed': True, 'flag': True, 'obj': obj}

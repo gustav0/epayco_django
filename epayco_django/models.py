@@ -11,13 +11,15 @@ from .utils import get_signature
 class AbstractFlagSegment(models.Model):
     DUPLICATE_TRANSACTION = '1001'
     INVALID_SIGN = '1002'
+    TEST_TRANSACTION = '1003'
     FLAG_CODES = (
         (DUPLICATE_TRANSACTION, 'Duplicate Transaction'),
         (INVALID_SIGN, 'Invalid Sign'),
+        (TEST_TRANSACTION, 'Test transacción on non test environment'),
     )
     flag = models.BooleanField(default=False)
-    flag_code = models.CharField(max_length=4, choices=FLAG_CODES)
-    flag_info = models.CharField(max_length=100)
+    flag_code = models.CharField(max_length=4, choices=FLAG_CODES, default='', blank=True)
+    flag_info = models.CharField(max_length=100, default='', blank=True)
 
     class Meta:
         abstract = True
@@ -38,13 +40,18 @@ class AbstractFlagSegment(models.Model):
                 self.flag_info = 'Invalid sign. ({}...)'.format(self.signature[:18])
                 super().save(*args, **kwargs)
                 return
-        exists = PaymentConfirmation.objects.filter(transaction_id=self.transaction_id)\
-            .exclude(cod_transaction_state=3)\
-            .exists()
+        exists = PaymentConfirmation.objects.filter(transaction_id=self.transaction_id) \
+            .exclude(cod_transaction_state=3).exists()  # Pending transaction shouldn't be flagged
+
         if not self.id and exists:  # Duplicate transaction validation
             self.flag = True
             self.flag_code = self.DUPLICATE_TRANSACTION
             self.flag_info = 'Duplicate transaction_id. ({})'.format(self.transaction_id)
+
+        if not self.id and self.test_request and not epayco_settings.TEST :  # Duplicate transaction validation
+            self.flag = True
+            self.flag_code = self.TEST_TRANSACTION
+            self.flag_info = 'Test transaction on non test environment. ({})'.format(self.transaction_id)
         super().save(*args, **kwargs)
 
 
@@ -76,7 +83,7 @@ class AbstractCreditCardSegment(models.Model):
 
 
 class AbstractTransactionSegment(models.Model):
-    transaction_id = models.CharField(max_length=16)
+    transaction_id = models.CharField(max_length=64)
     transaction_state = models.CharField(max_length=16)
     bank_name = models.CharField(max_length=128)
     response = models.CharField(max_length=16)
@@ -179,16 +186,16 @@ class PaymentConfirmation(AbstractPaymentConfirmation):
 
     test_request = models.BooleanField()
 
-    extra1 = models.CharField(max_length=255)
-    extra2 = models.CharField(max_length=255)
-    extra3 = models.CharField(max_length=255)
-    extra4 = models.CharField(max_length=255)
-    extra5 = models.CharField(max_length=255)
-    extra6 = models.CharField(max_length=255)
-    extra7 = models.CharField(max_length=255)
-    extra8 = models.CharField(max_length=255)
-    extra9 = models.CharField(max_length=255)
-    extra10 = models.CharField(max_length=255)
+    extra1 = models.CharField(max_length=255, blank=True)
+    extra2 = models.CharField(max_length=255, blank=True)
+    extra3 = models.CharField(max_length=255, blank=True)
+    extra4 = models.CharField(max_length=255, blank=True)
+    extra5 = models.CharField(max_length=255, blank=True)
+    extra6 = models.CharField(max_length=255, blank=True)
+    extra7 = models.CharField(max_length=255, blank=True)
+    extra8 = models.CharField(max_length=255, blank=True)
+    extra9 = models.CharField(max_length=255, blank=True)
+    extra10 = models.CharField(max_length=255, blank=True)
 
     raw = models.TextField()
 
