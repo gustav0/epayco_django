@@ -6,7 +6,7 @@ A Django integration for ePayco's gateway.
 * [Django](https://github.com/django/django)
 * [epayco-python](https://github.com/epayco/epayco-python)
 
-###Warning
+### Warning
 This library intends to use a fork of the epayco-python as the current version published py its owner
 doesn't work on pip, and you would have to fix it manually.
 The only changes are a couple of lines on the MANIFEST.in to make the setup.py properly 
