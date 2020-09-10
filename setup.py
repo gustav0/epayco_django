@@ -8,7 +8,7 @@ def read(fname):
 
 
 setup(name='epayco-django',
-      version='0.0.6',
+      version='0.0.8',
       include_package_data=True,
       license='MIT',
       description="A django integration for ePayco's gateway.",

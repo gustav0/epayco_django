@@ -90,7 +90,7 @@ class AbstractTransactionSegment(models.Model):
     approval_code = models.CharField(max_length=16)
     transaction_date = models.CharField(max_length=32)
     cod_response = models.CharField(max_length=8)
-    response_reason_text = models.CharField(max_length=64)
+    response_reason_text = models.CharField(max_length=256)
     errorcode = models.CharField(max_length=16)
     cod_transaction_state = models.CharField(max_length=8)
     business = models.CharField(max_length=256)

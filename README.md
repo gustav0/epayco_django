@@ -107,10 +107,40 @@ https://yourdomain.com/epayco/confirmation
 It is important to use https, and if you are working locally you can use tools 
 like [ngrok](https://ngrok.com/).
 
+
+### Template tags
+We have a templatetag to generate a payment button that is quick and easy to
+implement. It also is very customisable, you can assign any variable that's
+available on the epayco checkout page.
+
+Here is an example of how to use it.
+
+```
+{% load epayco_checkout %}
+
+<div class="my-button">
+{% render_checkout amount=9999 name="Test payment" currency="COP" extra1=request.user.id extra2="membership-3" request=request %}
+</div>
+```
+And that's it, you have a fully working payment button. This tag uses the image
+you set in the settings `CHECKOUT_BUTTON_URL`.
+
+You can check the complete list of options for this template tag
+[here](https://github.com/gustav0/epayco_django/blob/master/epayco_django/templatetags/epayco_checkout.py).
+
+
+### Default payment responses
+We have a template that is shown by the default payment response validation view at
+`https://example.com/payment/response-validation`.
+
+You can override this and whatever you feel like. Just create a new template at:
+`templates/simple_payment_response.html`
+
+
 ### Payment Confirmation
 
-Now that you set payment confirmations to be reported to your site, we can listen 
-to whatever confirmation is sent, validate it and act on it. Listen to any of the 
+Now that you set payment confirmations to be reported to your site, we can listen
+to whatever confirmation is sent, validate it and act on it. Listen to any of the
 `epayco_django.signals` you are interested in and you should be able to acomplish 
 what you need. Here is an example:
 ```
@@ -151,11 +181,9 @@ class MyView(TemplateView):
 ```
 
 ## Contributing
-I'm always grateful for any kind of contribution including but not limited to bug 
-reports, code enhancements, bug fixes, and even functionality suggestions.
+I'm always grateful for any kind of contribution including but not limited to bug reports, code enhancements, bug fixes, and even functionality suggestions.
 
-##### You can report any bug you find or suggest new functionality with a new 
-[issue](https://github.com/gustav0/epayco_django/issues).
+##### You can report any bug you find or suggest new functionality with a new [issue](https://github.com/gustav0/epayco_django/issues).
 
 ##### If you want to add yourself some functionality to the wrapper:
 1. Fork it ( https://github.com/gustav0/epayco_django)
