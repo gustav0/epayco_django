@@ -48,7 +48,7 @@ class AbstractFlagSegment(models.Model):
             self.flag_code = self.DUPLICATE_TRANSACTION
             self.flag_info = 'Duplicate transaction_id. ({})'.format(self.transaction_id)
 
-        if not self.id and self.test_request and not epayco_settings.TEST :  # Duplicate transaction validation
+        if not self.id and self.test_request and not epayco_settings.TEST:  # Duplicate transaction validation
             self.flag = True
             self.flag_code = self.TEST_TRANSACTION
             self.flag_info = 'Test transaction on non test environment. ({})'.format(self.transaction_id)
@@ -84,17 +84,17 @@ class AbstractCreditCardSegment(models.Model):
 
 class AbstractTransactionSegment(models.Model):
     transaction_id = models.CharField(max_length=64)
-    transaction_state = models.CharField(max_length=16)
+    transaction_state = models.CharField(max_length=32)
     bank_name = models.CharField(max_length=128)
-    response = models.CharField(max_length=16)
-    approval_code = models.CharField(max_length=16)
+    response = models.CharField(max_length=32)
+    approval_code = models.CharField(max_length=32)
     transaction_date = models.CharField(max_length=32)
-    cod_response = models.CharField(max_length=8)
+    cod_response = models.CharField(max_length=32)
     response_reason_text = models.CharField(max_length=256)
-    errorcode = models.CharField(max_length=16)
-    cod_transaction_state = models.CharField(max_length=8)
+    errorcode = models.CharField(max_length=32)
+    cod_transaction_state = models.CharField(max_length=32)
     business = models.CharField(max_length=256)
-    franchise = models.CharField(max_length=8)
+    franchise = models.CharField(max_length=32)
 
     class Meta:
         abstract = True
