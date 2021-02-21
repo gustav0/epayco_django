@@ -149,8 +149,8 @@ class AbstractTransactionSegment(models.Model):
 
 class AbstractCustomerSegment(models.Model):
     cust_id_cliente = models.CharField(max_length=128)
-    customer_doctype = models.CharField(max_length=3)
-    customer_document = models.CharField(max_length=16)
+    customer_doctype = models.CharField(max_length=12)
+    customer_document = models.CharField(max_length=64)
     customer_name = models.CharField(max_length=128)
     customer_lastname = models.CharField(max_length=128)
     customer_email = models.CharField(max_length=128)
