@@ -30,28 +30,28 @@ if not isinstance(USER_SETTINGS, dict):
 
 # List of settings that have a default when a value is not provided by the user.
 DEFAULTS = {
-    'PUBLIC_KEY': None,
-    'PRIVATE_KEY': None,
-    'P_KEY': None,
-    'TEST': False,
-    'CONFIRMATION_URL': 'epayco_confirmation',
-    'RESPONSE_URL': 'epayco_response_validation',
-    'CHECKOUT_BUTTON_URL': 'https://369969691f476073508a-60bf0867add971908d4f26a64'
-                           '519c2aa.ssl.cf5.rackcdn.com/btns/boton_carro_de_compras_epayco5.png',
-    'FORCE_HTTPS': True,  # Activates HTTPS on requests
+    "PUBLIC_KEY": None,
+    "PRIVATE_KEY": None,
+    "P_KEY": None,
+    "TEST": False,
+    "CONFIRMATION_URL": "epayco_confirmation",
+    "RESPONSE_URL": "epayco_response_validation",
+    "CHECKOUT_BUTTON_URL": "https://369969691f476073508a-60bf0867add971908d4f26a64"
+    "519c2aa.ssl.cf5.rackcdn.com/btns/boton_carro_de_compras_epayco5.png",
+    "FORCE_HTTPS": True,  # Activates HTTPS on requests
 }
 
 # List of settings that cannot be empty
 MANDATORY = (
-    'PUBLIC_KEY',
-    'PRIVATE_KEY',
-    'P_KEY',
+    "PUBLIC_KEY",
+    "PRIVATE_KEY",
+    "P_KEY",
 )
 
 
 class EpaycoSettings(object):
     """
-        Settings object that allows accessing the ePayco settings as properties.
+    Settings object that allows accessing the ePayco settings as properties.
     """
 
     def __init__(self, user_settings=None, defaults=None, mandatory=None):
@@ -70,7 +70,7 @@ class EpaycoSettings(object):
             # Fall back to defaults
             val = self.defaults[attr]
 
-        if attr in ['CONFIRMATION_URL', 'RESPONSE_URL'] and not attr.startswith('https://'):
+        if attr in ["CONFIRMATION_URL", "RESPONSE_URL"] and not attr.startswith("https://"):
             val = reverse(val)
 
         self.validate_setting(attr, val)

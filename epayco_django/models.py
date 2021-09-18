@@ -3,23 +3,28 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from .settings import epayco_settings
-from .signals import invalid_confirmation_received, confirmation_was_flagged, valid_confirmation_received, \
-    confirmation_was_approved, confirmation_was_rejected
+from .signals import (
+    invalid_confirmation_received,
+    confirmation_was_flagged,
+    valid_confirmation_received,
+    confirmation_was_approved,
+    confirmation_was_rejected,
+)
 from .utils import get_signature
 
 
 class AbstractFlagSegment(models.Model):
-    DUPLICATE_TRANSACTION = '1001'
-    INVALID_SIGN = '1002'
-    TEST_TRANSACTION = '1003'
+    DUPLICATE_TRANSACTION = "1001"
+    INVALID_SIGN = "1002"
+    TEST_TRANSACTION = "1003"
     FLAG_CODES = (
-        (DUPLICATE_TRANSACTION, 'Duplicate Transaction'),
-        (INVALID_SIGN, 'Invalid Sign'),
-        (TEST_TRANSACTION, 'Test transacción on non test environment'),
+        (DUPLICATE_TRANSACTION, "Duplicate Transaction"),
+        (INVALID_SIGN, "Invalid Sign"),
+        (TEST_TRANSACTION, "Test transacción on non test environment"),
     )
     flag = models.BooleanField(default=False)
-    flag_code = models.CharField(max_length=4, choices=FLAG_CODES, default='', blank=True)
-    flag_info = models.CharField(max_length=100, default='', blank=True)
+    flag_code = models.CharField(max_length=4, choices=FLAG_CODES, default="", blank=True)
+    flag_info = models.CharField(max_length=100, default="", blank=True)
 
     class Meta:
         abstract = True
@@ -31,27 +36,36 @@ class AbstractFlagSegment(models.Model):
     def save(self, *args, **kwargs):
         # transaction_id can be found at 'AbstractTransactionSegment'
         if not self.id:
-            signature = get_signature(self.cust_id_cliente, epayco_settings.P_KEY, self.ref_payco, self.transaction_id,
-                                      self.amount, self.currency_code)
+            signature = get_signature(
+                self.cust_id_cliente,
+                epayco_settings.P_KEY,
+                self.ref_payco,
+                self.transaction_id,
+                self.amount,
+                self.currency_code,
+            )
             valid_signature = signature == self.signature
             if not valid_signature:
                 self.flag = True
                 self.flag_code = self.INVALID_SIGN
-                self.flag_info = 'Invalid sign. ({}...)'.format(self.signature[:18])
+                self.flag_info = "Invalid sign. ({}...)".format(self.signature[:18])
                 super().save(*args, **kwargs)
                 return
-        exists = PaymentConfirmation.objects.filter(transaction_id=self.transaction_id) \
-            .exclude(cod_transaction_state=3).exists()  # Pending transaction shouldn't be flagged
+        exists = (
+            PaymentConfirmation.objects.filter(transaction_id=self.transaction_id)
+            .exclude(cod_transaction_state=3)
+            .exists()
+        )  # Pending transaction shouldn't be flagged
 
         if not self.id and exists:  # Duplicate transaction validation
             self.flag = True
             self.flag_code = self.DUPLICATE_TRANSACTION
-            self.flag_info = 'Duplicate transaction_id. ({})'.format(self.transaction_id)
+            self.flag_info = "Duplicate transaction_id. ({})".format(self.transaction_id)
 
         if not self.id and self.test_request and not epayco_settings.TEST:  # Duplicate transaction validation
             self.flag = True
             self.flag_code = self.TEST_TRANSACTION
-            self.flag_info = 'Test transaction on non test environment. ({})'.format(self.transaction_id)
+            self.flag_info = "Test transaction on non test environment. ({})".format(self.transaction_id)
         super().save(*args, **kwargs)
 
 
@@ -104,47 +118,47 @@ class AbstractTransactionSegment(models.Model):
 
     @property
     def is_approved(self):
-        return self.cod_transaction_state == '1'
+        return self.cod_transaction_state == "1"
 
     @property
     def is_rejected(self):
-        return self.cod_transaction_state == '2'
+        return self.cod_transaction_state == "2"
 
     @property
     def is_pending(self):
-        return self.cod_transaction_state == '3'
+        return self.cod_transaction_state == "3"
 
     @property
     def is_failed(self):
-        return self.cod_transaction_state == '4'
+        return self.cod_transaction_state == "4"
 
     @property
     def is_reversed(self):
-        return self.cod_transaction_state == '6'
+        return self.cod_transaction_state == "6"
 
     @property
     def is_retained(self):
-        return self.cod_transaction_state == '7'
+        return self.cod_transaction_state == "7"
 
     @property
     def is_initiated(self):
-        return self.cod_transaction_state == '8'
+        return self.cod_transaction_state == "8"
 
     @property
     def is_expired(self):
-        return self.cod_transaction_state == '9'
+        return self.cod_transaction_state == "9"
 
     @property
     def is_abandoned(self):
-        return self.cod_transaction_state == '10'
+        return self.cod_transaction_state == "10"
 
     @property
     def is_canceled(self):
-        return self.cod_transaction_state == '11'
+        return self.cod_transaction_state == "11"
 
     @property
     def is_antifraud_flagged(self):
-        return self.cod_transaction_state == '12'
+        return self.cod_transaction_state == "12"
 
 
 class AbstractCustomerSegment(models.Model):
@@ -166,11 +180,13 @@ class AbstractCustomerSegment(models.Model):
         abstract = True
 
 
-class AbstractPaymentConfirmation(AbstractCustomerSegment,
-                                  AbstractTransactionSegment,
-                                  AbstractCreditCardSegment,
-                                  AbstractFlagSegment,
-                                  AbstractPaymentSegment):
+class AbstractPaymentConfirmation(
+    AbstractCustomerSegment,
+    AbstractTransactionSegment,
+    AbstractCreditCardSegment,
+    AbstractFlagSegment,
+    AbstractPaymentSegment,
+):
     created = models.DateTimeField(auto_now_add=True, editable=False)
     updated = models.DateTimeField(auto_now=True, editable=False)
 
@@ -200,20 +216,20 @@ class PaymentConfirmation(AbstractPaymentConfirmation):
     raw = models.TextField()
 
     class Meta:
-        db_table = 'epayco_payment_confirmation'
+        db_table = "epayco_payment_confirmation"
 
     def get_invoice_data(self):
         return {
-            'invoice': self.invoice_id,
-            'ref_payco': self.ref_payco,
-            'description': self.description,
-            'amount': self.amount,
-            'impuesto': self.tax,
-            'base_impuesto': self.amount_base,
-            'response_reason': self.response_reason_text,
-            'error_code': self.errorcode,
-            'nombre_pagador': self.customer_name,
-            'apellido_pagador': self.customer_lastname,
+            "invoice": self.invoice_id,
+            "ref_payco": self.ref_payco,
+            "description": self.description,
+            "amount": self.amount,
+            "impuesto": self.tax,
+            "base_impuesto": self.amount_base,
+            "response_reason": self.response_reason_text,
+            "error_code": self.errorcode,
+            "nombre_pagador": self.customer_name,
+            "apellido_pagador": self.customer_lastname,
         }
 
 
